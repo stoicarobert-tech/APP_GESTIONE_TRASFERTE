@@ -2,6 +2,8 @@
 
 Una PWA in italiano per organizzare due anni in Germania: agenda, conteggio ore, inventario e foto di frigo e spesa.
 
+**App online:** https://stoicarobert-tech.github.io/APP_GESTIONE_TRASFERTE/
+
 ## Avvio sul computer
 
 Fai doppio clic su `avvia-app.bat`, oppure apri PowerShell in questa cartella ed esegui:
