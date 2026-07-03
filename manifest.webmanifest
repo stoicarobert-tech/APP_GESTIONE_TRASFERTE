@@ -1,0 +1,15 @@
+{
+  "name": "Zwei — Vita in Germania",
+  "short_name": "Zwei",
+  "description": "Agenda, inventario, foto e conteggio ore per la tua vita in Germania.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f3ee",
+  "theme_color": "#171a15",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#171a15" />
+    <meta name="description" content="Organizza giornate, ore, inventario e foto della tua vita in Germania." />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Zwei — La tua vita in Germania</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#oggi" aria-label="Zwei, home">
+          <span class="brand-mark">Z</span>
+          <span><strong>Zwei</strong><small>Germania, con calma.</small></span>
+        </a>
+
+        <nav class="side-nav" aria-label="Navigazione principale">
+          <button class="nav-item active" data-view="oggi"><span>⌂</span> Oggi</button>
+          <button class="nav-item" data-view="agenda"><span>◷</span> Agenda</button>
+          <button class="nav-item" data-view="inventario"><span>▦</span> Inventario</button>
+          <button class="nav-item" data-view="foto"><span>◉</span> Foto</button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="germany-card">
+            <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div><strong>Il tuo biennio</strong><small id="journey-days">730 giorni da vivere</small></div>
+          </div>
+          <button id="install-button" class="install-button" hidden>↓ Installa l’app</button>
+          <button id="export-button" class="text-button">Esporta i tuoi dati</button>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="today-label">OGGI</p>
+            <h1 id="page-title">Guten Morgen!</h1>
+          </div>
+          <div class="header-actions">
+            <button class="icon-button mobile-install" id="install-button-mobile" aria-label="Installa l’app" hidden>↓</button>
+            <button class="icon-button" id="theme-button" aria-label="Cambia tema">☼</button>
+            <button class="avatar" aria-label="Profilo">RS</button>
+          </div>
+        </header>
+
+        <section class="view active" id="view-oggi">
+          <div class="hero-grid">
+            <article class="hero-card">
+              <div>
+                <p class="eyebrow soft">IL PIANO DI OGGI</p>
+                <h2>Una giornata alla volta.<br /><em>Du schaffst das.</em></h2>
+                <p id="hero-summary">Hai una giornata tutta da organizzare.</p>
+              </div>
+              <button class="primary-button" data-open="activity">＋ Aggiungi attività</button>
+              <span class="hero-orbit orbit-one"></span><span class="hero-orbit orbit-two"></span>
+            </article>
+
+            <article class="focus-card">
+              <div class="focus-top"><span>FOCUS SETTIMANA</span><strong id="week-hours">0h</strong></div>
+              <div class="ring-wrap">
+                <div class="progress-ring" id="progress-ring"><span id="ring-percent">0%</span></div>
+                <div><strong id="week-goal-label">di 40 ore</strong><small>pianificate</small></div>
+              </div>
+              <button class="link-button" id="goal-button">Modifica obiettivo →</button>
+            </article>
+          </div>
+
+          <div class="section-heading">
+            <div><p class="eyebrow">IL TUO TEMPO</p><h2>Dove vanno le tue ore</h2></div>
+            <select id="stats-range" aria-label="Intervallo statistiche"><option value="all">Totale</option><option value="week">Questa settimana</option><option value="month">Questo mese</option></select>
+          </div>
+          <div class="stats-grid" id="stats-grid"></div>
+
+          <div class="dashboard-grid">
+            <section class="panel today-panel">
+              <div class="panel-title"><div><p class="eyebrow">AGENDA</p><h2>Oggi</h2></div><button class="round-add" data-open="activity" aria-label="Aggiungi attività">＋</button></div>
+              <div id="today-list" class="timeline"></div>
+            </section>
+
+            <section class="panel expiring-panel">
+              <div class="panel-title"><div><p class="eyebrow">IN CUCINA</p><h2>Da consumare presto</h2></div><button class="link-button" data-go="inventario">Vedi tutto</button></div>
+              <div id="expiring-list" class="compact-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-agenda">
+          <div class="section-heading agenda-heading">
+            <div><p class="eyebrow">PIANIFICA SENZA STRESS</p><h2>La tua agenda</h2></div>
+            <button class="primary-button" data-open="activity">＋ Nuova attività</button>
+          </div>
+          <div class="week-strip" id="week-strip"></div>
+          <div class="filter-row" id="activity-filters">
+            <button class="chip active" data-filter="all">Tutto</button>
+            <button class="chip" data-filter="lavoro">Lavoro</button>
+            <button class="chip" data-filter="palestra">Palestra</button>
+            <button class="chip" data-filter="gaming">Gaming</button>
+            <button class="chip" data-filter="altro">Altro</button>
+          </div>
+          <div class="panel agenda-list" id="agenda-list"></div>
+        </section>
+
+        <section class="view" id="view-inventario">
+          <div class="section-heading inventory-heading">
+            <div><p class="eyebrow">ZERO SPRECHI</p><h2>Inventario di casa</h2></div>
+            <button class="primary-button" data-open="item">＋ Aggiungi prodotto</button>
+          </div>
+          <div class="inventory-toolbar">
+            <label class="search-box"><span>⌕</span><input id="inventory-search" type="search" placeholder="Cerca un prodotto…" /></label>
+            <select id="inventory-location"><option value="all">Tutti i posti</option><option>Frigo</option><option>Freezer</option><option>Dispensa</option><option>Bagno</option><option>Altro</option></select>
+          </div>
+          <div class="inventory-overview" id="inventory-overview"></div>
+          <div class="inventory-grid" id="inventory-grid"></div>
+        </section>
+
+        <section class="view" id="view-foto">
+          <div class="section-heading photo-heading">
+            <div><p class="eyebrow">MEMORIA VISIVA</p><h2>Frigo & spesa</h2></div>
+            <button class="primary-button" data-open="photo">＋ Aggiungi foto</button>
+          </div>
+          <div class="photo-upload" data-open="photo" role="button" tabindex="0">
+            <span class="upload-icon">↥</span>
+            <div><strong>Fotografa il frigo o la spesa</strong><small>Le immagini restano solo sul tuo dispositivo</small></div>
+            <span class="upload-arrow">→</span>
+          </div>
+          <div class="filter-row" id="photo-filters"><button class="chip active" data-filter="all">Tutte</button><button class="chip" data-filter="frigo">Frigo</button><button class="chip" data-filter="spesa">Spesa</button><button class="chip" data-filter="altro">Altro</button></div>
+          <div class="photo-grid" id="photo-grid"></div>
+        </section>
+      </main>
+
+      <nav class="mobile-nav" aria-label="Navigazione mobile">
+        <button class="nav-item active" data-view="oggi"><span>⌂</span><small>Oggi</small></button>
+        <button class="nav-item" data-view="agenda"><span>◷</span><small>Agenda</small></button>
+        <button class="nav-item add-mobile" data-open="activity"><span>＋</span><small>Aggiungi</small></button>
+        <button class="nav-item" data-view="inventario"><span>▦</span><small>Inventario</small></button>
+        <button class="nav-item" data-view="foto"><span>◉</span><small>Foto</small></button>
+      </nav>
+    </div>
+
+    <dialog id="activity-dialog" class="modal">
+      <form id="activity-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">NUOVO IMPEGNO</p><h2>Aggiungi attività</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <input type="hidden" name="id" />
+        <label>Titolo<input name="title" required maxlength="60" placeholder="Es. Turno in ufficio" /></label>
+        <div class="form-row"><label>Data<input name="date" type="date" required /></label><label>Categoria<select name="category" required><option value="lavoro">Lavoro</option><option value="palestra">Palestra</option><option value="gaming">Gaming</option><option value="altro">Altro</option></select></label></div>
+        <div class="form-row"><label>Inizio<input name="start" type="time" required /></label><label>Fine<input name="end" type="time" required /></label></div>
+        <label>Nota <span class="optional">facoltativa</span><textarea name="notes" rows="3" maxlength="180" placeholder="Aggiungi un dettaglio…"></textarea></label>
+        <button class="primary-button full" type="submit">Salva attività</button>
+      </form>
+    </dialog>
+
+    <dialog id="item-dialog" class="modal">
+      <form id="item-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">INVENTARIO</p><h2>Aggiungi prodotto</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <input type="hidden" name="id" />
+        <label>Prodotto<input name="name" required maxlength="50" placeholder="Es. Latte" /></label>
+        <div class="form-row"><label>Quantità<input name="quantity" required maxlength="20" value="1" placeholder="Es. 2 confezioni" /></label><label>Dove si trova<select name="location"><option>Frigo</option><option>Freezer</option><option>Dispensa</option><option>Bagno</option><option>Altro</option></select></label></div>
+        <label>Scadenza <span class="optional">facoltativa</span><input name="expiry" type="date" /></label>
+        <label>Nota <span class="optional">facoltativa</span><textarea name="notes" rows="2" maxlength="140" placeholder="Marca, prezzo, promemoria…"></textarea></label>
+        <button class="primary-button full" type="submit">Salva prodotto</button>
+      </form>
+    </dialog>
+
+    <dialog id="photo-dialog" class="modal">
+      <form id="photo-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">NUOVA FOTO</p><h2>Ricorda cosa hai</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <label class="file-drop" id="file-drop">
+          <input name="photo" id="photo-input" type="file" accept="image/*" capture="environment" required />
+          <img id="photo-preview" alt="Anteprima" hidden />
+          <span id="file-prompt"><b>◎</b><strong>Scatta o scegli una foto</strong><small>JPG, PNG o HEIC</small></span>
+        </label>
+        <div class="form-row"><label>Tipo<select name="type"><option value="frigo">Frigo</option><option value="spesa">Spesa</option><option value="altro">Altro</option></select></label><label>Data<input name="date" type="date" required /></label></div>
+        <label>Nota <span class="optional">facoltativa</span><input name="caption" maxlength="80" placeholder="Es. Spesa della settimana" /></label>
+        <button class="primary-button full" type="submit">Salva foto</button>
+      </form>
+    </dialog>
+
+    <dialog id="goal-dialog" class="modal small-modal">
+      <form id="goal-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">FOCUS</p><h2>Obiettivo settimanale</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <label>Ore pianificate<input name="goal" type="number" min="1" max="168" required /></label>
+        <button class="primary-button full" type="submit">Aggiorna obiettivo</button>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
