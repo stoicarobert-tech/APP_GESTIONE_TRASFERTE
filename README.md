@@ -1,6 +1,6 @@
 # FOCUS
 
-Una PWA in italiano per organizzare due anni in Germania: agenda, conteggio ore, inventario e foto di frigo e spesa.
+Una PWA in italiano per organizzare ogni trasferta: agenda, conteggio ore, profili locali, inventario e foto di frigo e spesa.
 
 **App online:** https://stoicarobert-tech.github.io/APP_GESTIONE_TRASFERTE/
 
@@ -31,5 +31,6 @@ I dati sono salvati localmente sul dispositivo. Le attività e l'inventario usan
 - Inventario con quantità, posizione, ricerca e scadenze.
 - Foto di frigo e spesa scattate direttamente dal telefono.
 - Tema chiaro/scuro, uso offline e layout responsive.
+- Profili locali con username e dati separati, persistenti sul dispositivo.
 
 Al primo avvio sono presenti pochi dati di esempio, tutti modificabili o eliminabili.

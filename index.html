@@ -4,19 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#171a15" />
-    <meta name="description" content="Organizza giornate, ore, inventario e foto della tua vita in Germania." />
-    <link rel="manifest" href="manifest.webmanifest?v=5" />
-    <link rel="icon" href="icons/icon.svg?v=5" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=5" />
-    <link rel="stylesheet" href="styles.css?v=5" />
-    <title>FOCUS — La tua vita in Germania</title>
+    <meta name="description" content="Organizza giornate, ore, inventario e foto durante ogni trasferta." />
+    <link rel="manifest" href="manifest.webmanifest?v=7" />
+    <link rel="icon" href="icons/icon.svg?v=7" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=7" />
+    <link rel="stylesheet" href="styles.css?v=7" />
+    <title>FOCUS — Ogni trasferta, organizzata</title>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
         <a class="brand" href="#oggi" aria-label="FOCUS, home">
           <span class="brand-mark" aria-hidden="true"><i class="focus-glyph"></i></span>
-          <span><strong>FOCUS</strong><small>Germania, con calma.</small></span>
+          <span><strong>FOCUS</strong><small>Ogni trasferta, a fuoco.</small></span>
         </a>
 
         <nav class="side-nav" aria-label="Navigazione principale">
@@ -27,9 +27,9 @@
         </nav>
 
         <div class="sidebar-bottom">
-          <div class="germany-card">
-            <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
-            <div><strong>Il tuo biennio</strong><small id="journey-days">730 giorni da vivere</small></div>
+          <div class="germany-card trip-card">
+            <span class="trip-mark" aria-hidden="true">↗</span>
+            <div><strong>La tua trasferta</strong><small id="journey-days">Tutto sotto controllo</small></div>
           </div>
           <button id="install-button" class="install-button" hidden>↓ Installa l’app</button>
           <button id="export-button" class="text-button">Esporta i tuoi dati</button>
@@ -40,12 +40,12 @@
         <header class="topbar">
           <div>
             <p class="eyebrow" id="today-label">OGGI</p>
-            <h1 id="page-title">Guten Morgen!</h1>
+            <h1 id="page-title">Buongiorno!</h1>
           </div>
           <div class="header-actions">
             <button class="icon-button mobile-install" id="install-button-mobile" aria-label="Installa l’app" hidden>↓</button>
             <button class="icon-button" id="theme-button" aria-label="Cambia tema">☼</button>
-            <button class="avatar" aria-label="Profilo">RS</button>
+            <button class="avatar" data-open="profile" aria-label="Apri profilo">TU</button>
           </div>
         </header>
 
@@ -54,7 +54,7 @@
             <article class="hero-card">
               <div>
                 <p class="eyebrow soft">IL PIANO DI OGGI</p>
-                <h2>Una giornata alla volta.<br /><em>Du schaffst das.</em></h2>
+                <h2>Una giornata alla volta.<br /><em>Resta nel tuo focus.</em></h2>
                 <p id="hero-summary">Hai una giornata tutta da organizzare.</p>
               </div>
               <button class="primary-button" data-open="activity">＋ Aggiungi attività</button>
@@ -189,7 +189,17 @@
       </form>
     </dialog>
 
+    <dialog id="profile-dialog" class="modal small-modal">
+      <form id="profile-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">PROFILI LOCALI</p><h2>Il tuo account</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <p class="profile-note">Ogni username conserva separatamente attività, inventario e foto su questo dispositivo.</p>
+        <div id="profile-list" class="profile-list"></div>
+        <label>Nuovo username<input name="username" required minlength="2" maxlength="24" autocomplete="username" placeholder="Es. Roberto" /></label>
+        <button class="primary-button full" type="submit">Crea e accedi</button>
+      </form>
+    </dialog>
+
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=5" defer></script>
+    <script src="app.js?v=7" defer></script>
   </body>
 </html>

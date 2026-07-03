@@ -1,7 +1,7 @@
 {
-  "name": "FOCUS — Vita in Germania",
+  "name": "FOCUS — Trasferte organizzate",
   "short_name": "FOCUS",
-  "description": "Agenda, inventario, foto e conteggio ore per la tua vita in Germania.",
+  "description": "Agenda, inventario, foto e conteggio ore per ogni trasferta.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,7 +9,7 @@
   "theme_color": "#171a15",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "icons/icon.svg?v=5", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "icons/icon-maskable.svg?v=5", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "icons/icon.svg?v=7", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-maskable.svg?v=7", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }

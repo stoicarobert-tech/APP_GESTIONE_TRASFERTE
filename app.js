@@ -2,6 +2,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const STORAGE_KEY = 'zwei-data-v1';
+const PROFILES_KEY = 'focus-profiles-v1';
 const categories = {
   lavoro: { label: 'Lavoro', color: '#79a8bf', icon: '▣' },
   palestra: { label: 'Palestra', color: '#ef765e', icon: '◆' },
@@ -36,6 +37,7 @@ const starterData = {
   settings: { weeklyGoal: 40, theme: 'light', journeyStart: '' }
 };
 
+let profiles = loadProfiles();
 let state = loadState();
 let selectedActivityFilter = 'all';
 let selectedPhotoFilter = 'all';
@@ -44,18 +46,51 @@ let pendingPhoto = null;
 let installPrompt = null;
 let toastTimer;
 
-function loadState() {
+function loadProfiles() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const saved = JSON.parse(localStorage.getItem(PROFILES_KEY));
+    if (saved?.current && Array.isArray(saved.accounts) && saved.accounts.length) return saved;
+  } catch (_) { /* create the local default profile */ }
+  const defaults = { current: 'default', accounts: [{ id: 'default', name: 'Profilo principale' }] };
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(defaults));
+  return defaults;
+}
+
+function currentProfileId() {
+  return profiles.current || 'default';
+}
+
+function profileDataKey() {
+  return currentProfileId() === 'default' ? STORAGE_KEY : `focus-data-v1-${currentProfileId()}`;
+}
+
+function emptyProfileData() {
+  return { activities: [], inventory: [], settings: { weeklyGoal: 40, theme: 'light', journeyStart: '' } };
+}
+
+function loadState() {
+  const key = profileDataKey();
+  try {
+    const saved = JSON.parse(localStorage.getItem(key));
     if (saved?.activities && saved?.inventory) return saved;
-  } catch (_) { /* use starter data */ }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(starterData));
-  return structuredClone(starterData);
+  } catch (_) { /* create a clean profile */ }
+  const initial = currentProfileId() === 'default' ? structuredClone(starterData) : emptyProfileData();
+  localStorage.setItem(key, JSON.stringify(initial));
+  return initial;
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(profileDataKey(), JSON.stringify(state));
   renderAll();
+}
+
+function saveProfiles() {
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+}
+
+function profileInitials(name = '') {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return (parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0]?.slice(0, 2) || 'TU').toUpperCase();
 }
 
 function durationHours(activity) {
@@ -127,16 +162,25 @@ function renderHeader() {
   const now = new Date();
   $('#today-label').textContent = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }).format(now).toUpperCase();
   const hour = now.getHours();
-  $('#page-title').textContent = hour < 12 ? 'Guten Morgen!' : hour < 18 ? 'Guten Tag!' : 'Guten Abend!';
+  const profile = profiles.accounts.find(account => account.id === currentProfileId());
+  const firstName = currentProfileId() === 'default' ? '' : profile?.name?.split(/\s+/)[0] || '';
+  $('#page-title').textContent = `${hour < 12 ? 'Buongiorno' : hour < 18 ? 'Buon pomeriggio' : 'Buonasera'}${firstName ? `, ${firstName}` : ''}!`;
   const todayItems = state.activities.filter(a => a.date === todayISO());
   const total = todayItems.reduce((sum, item) => sum + durationHours(item), 0);
   $('#hero-summary').textContent = todayItems.length
     ? `${todayItems.length} ${todayItems.length === 1 ? 'impegno' : 'impegni'} · ${formatHours(total)} pianificate.`
     : 'Hai una giornata tutta da organizzare.';
-  if (state.settings.journeyStart) {
-    const elapsed = Math.max(0, -dateDiff(state.settings.journeyStart));
-    $('#journey-days').textContent = `${Math.max(0, 730 - elapsed)} giorni da vivere`;
-  }
+  $('#journey-days').textContent = `${state.activities.length} attività · ${state.inventory.length} prodotti`;
+}
+
+function renderProfiles() {
+  const current = profiles.accounts.find(account => account.id === currentProfileId()) || profiles.accounts[0];
+  const avatar = $('.avatar');
+  avatar.textContent = currentProfileId() === 'default' ? 'TU' : profileInitials(current?.name);
+  avatar.title = current?.name || 'Profilo';
+  $('#profile-list').innerHTML = profiles.accounts.map(account => `<button type="button" class="profile-option ${account.id === currentProfileId() ? 'active' : ''}" data-switch-profile="${account.id}">
+    <span class="profile-initials">${profileInitials(account.name)}</span><div><strong>${escapeHTML(account.name)}</strong><small>${account.id === currentProfileId() ? 'Profilo attivo' : 'Tocca per accedere'}</small></div>${account.id === currentProfileId() ? '<span class="profile-check">✓</span>' : ''}
+  </button>`).join('');
 }
 
 function renderStats() {
@@ -259,6 +303,7 @@ async function photoStore(mode, payload) {
 
 async function renderPhotos() {
   let photos = await photoStore('getAll');
+  photos = photos.filter(photo => photo.owner ? photo.owner === currentProfileId() : currentProfileId() === 'default');
   photos.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
   if (selectedPhotoFilter !== 'all') photos = photos.filter(p => p.type === selectedPhotoFilter);
   $('#photo-grid').innerHTML = photos.length ? photos.map(photo => `<article class="photo-card">
@@ -269,7 +314,7 @@ async function renderPhotos() {
 }
 
 function renderAll() {
-  renderHeader(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderPhotos();
+  renderHeader(); renderProfiles(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderPhotos();
   document.body.classList.toggle('dark', state.settings.theme === 'dark');
   $('#theme-button').textContent = state.settings.theme === 'dark' ? '☾' : '☼';
 }
@@ -299,6 +344,7 @@ function openDialog(type, data = null) {
   if (type === 'photo') {
     pendingPhoto = null; form.elements.date.value = todayISO(); $('#photo-preview').hidden = true; $('#file-prompt').hidden = false;
   }
+  if (type === 'profile') renderProfiles();
   dialog.showModal();
 }
 
@@ -348,6 +394,12 @@ function bindEvents() {
     if (deletePhoto && confirm('Eliminare questa foto?')) {
       await photoStore('delete', deletePhoto.dataset.deletePhoto); renderPhotos(); showToast('Foto eliminata');
     }
+    const switchProfile = event.target.closest('[data-switch-profile]');
+    if (switchProfile && switchProfile.dataset.switchProfile !== currentProfileId()) {
+      profiles.current = switchProfile.dataset.switchProfile;
+      saveProfiles(); state = loadState();
+      switchProfile.closest('dialog')?.close(); renderAll(); showToast('Profilo cambiato');
+    }
     const day = event.target.closest('[data-date]');
     if (day) { selectedAgendaDate = selectedAgendaDate === day.dataset.date ? null : day.dataset.date; renderAgenda(); }
   });
@@ -379,6 +431,21 @@ function bindEvents() {
     event.target.closest('dialog').close(); saveState(); showToast(data.id ? 'Prodotto aggiornato' : 'Prodotto aggiunto');
   });
 
+  $('#profile-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const username = new FormData(event.target).get('username').trim().replace(/\s+/g, ' ');
+    if (username.length < 2) return showToast('Inserisci almeno 2 caratteri');
+    const existing = profiles.accounts.find(account => account.name.toLowerCase() === username.toLowerCase());
+    if (existing) {
+      profiles.current = existing.id;
+    } else {
+      const id = `${username.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'profilo'}-${uid().slice(-4)}`;
+      profiles.accounts.push({ id, name: username }); profiles.current = id;
+    }
+    saveProfiles(); state = loadState();
+    event.target.closest('dialog').close(); event.target.reset(); renderAll(); showToast(`Accesso come ${username}`);
+  });
+
   $('#photo-input').addEventListener('change', async event => {
     const file = event.target.files[0]; if (!file) return;
     try {
@@ -390,7 +457,7 @@ function bindEvents() {
     event.preventDefault();
     if (!pendingPhoto) return showToast('Scegli prima una foto');
     const data = Object.fromEntries(new FormData(event.target)); delete data.photo;
-    await photoStore('put', { ...data, id: uid(), data: pendingPhoto, createdAt: Date.now() });
+    await photoStore('put', { ...data, id: uid(), owner: currentProfileId(), data: pendingPhoto, createdAt: Date.now() });
     event.target.closest('dialog').close(); renderPhotos(); showToast('Foto salvata sul dispositivo');
   });
 
@@ -401,8 +468,10 @@ function bindEvents() {
   $('#theme-button').addEventListener('click', () => { state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark'; saveState(); });
 
   $('#export-button').addEventListener('click', async () => {
-    const photos = await photoStore('getAll');
-    const blob = new Blob([JSON.stringify({ ...state, photos, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+    const allPhotos = await photoStore('getAll');
+    const photos = allPhotos.filter(photo => photo.owner ? photo.owner === currentProfileId() : currentProfileId() === 'default');
+    const account = profiles.accounts.find(item => item.id === currentProfileId());
+    const blob = new Blob([JSON.stringify({ account, ...state, photos, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `focus-backup-${todayISO()}.json`; link.click(); URL.revokeObjectURL(link.href); showToast('Backup esportato');
   });
 
@@ -424,7 +493,7 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=5').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=7').catch(() => {});
 }
 
 init();
