@@ -403,7 +403,7 @@ function bindEvents() {
   $('#export-button').addEventListener('click', async () => {
     const photos = await photoStore('getAll');
     const blob = new Blob([JSON.stringify({ ...state, photos, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `zwei-backup-${todayISO()}.json`; link.click(); URL.revokeObjectURL(link.href); showToast('Backup esportato');
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `focus-backup-${todayISO()}.json`; link.click(); URL.revokeObjectURL(link.href); showToast('Backup esportato');
   });
 
   const installButtons = [$('#install-button'), $('#install-button-mobile')];
