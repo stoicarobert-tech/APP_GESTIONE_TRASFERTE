@@ -1,4 +1,4 @@
-const CACHE = 'focus-v3';
+const CACHE = 'focus-v4';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icons/icon.svg', './icons/icon-maskable.svg'];
 
 self.addEventListener('install', event => {
