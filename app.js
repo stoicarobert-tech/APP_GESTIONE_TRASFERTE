@@ -424,7 +424,7 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=5').catch(() => {});
 }
 
 init();
