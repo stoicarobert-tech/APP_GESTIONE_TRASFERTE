@@ -178,9 +178,12 @@ function renderProfiles() {
   const avatar = $('.avatar');
   avatar.textContent = currentProfileId() === 'default' ? 'TU' : profileInitials(current?.name);
   avatar.title = current?.name || 'Profilo';
-  $('#profile-list').innerHTML = profiles.accounts.map(account => `<button type="button" class="profile-option ${account.id === currentProfileId() ? 'active' : ''}" data-switch-profile="${account.id}">
-    <span class="profile-initials">${profileInitials(account.name)}</span><div><strong>${escapeHTML(account.name)}</strong><small>${account.id === currentProfileId() ? 'Profilo attivo' : 'Tocca per accedere'}</small></div>${account.id === currentProfileId() ? '<span class="profile-check">✓</span>' : ''}
-  </button>`).join('');
+  $('#profile-list').innerHTML = profiles.accounts.map(account => `<div class="profile-row">
+    <button type="button" class="profile-option ${account.id === currentProfileId() ? 'active' : ''}" data-switch-profile="${account.id}">
+      <span class="profile-initials">${profileInitials(account.name)}</span><div><strong>${escapeHTML(account.name)}</strong><small>${account.id === currentProfileId() ? 'Profilo attivo' : 'Tocca per accedere'}</small></div>${account.id === currentProfileId() ? '<span class="profile-check">✓</span>' : ''}
+    </button>
+    ${account.id !== 'default' ? `<button type="button" class="profile-delete" data-delete-profile="${account.id}" aria-label="Elimina profilo ${escapeHTML(account.name)}">×</button>` : ''}
+  </div>`).join('');
 }
 
 function renderStats() {
@@ -400,6 +403,19 @@ function bindEvents() {
       saveProfiles(); state = loadState();
       switchProfile.closest('dialog')?.close(); renderAll(); showToast('Profilo cambiato');
     }
+    const deleteProfile = event.target.closest('[data-delete-profile]');
+    if (deleteProfile) {
+      const profileId = deleteProfile.dataset.deleteProfile;
+      const account = profiles.accounts.find(item => item.id === profileId);
+      if (account && confirm(`Eliminare il profilo "${account.name}" e tutti i suoi dati?`)) {
+        profiles.accounts = profiles.accounts.filter(item => item.id !== profileId);
+        if (currentProfileId() === profileId) profiles.current = 'default';
+        localStorage.removeItem(`focus-data-v1-${profileId}`); saveProfiles();
+        const profilePhotos = (await photoStore('getAll')).filter(photo => photo.owner === profileId);
+        await Promise.all(profilePhotos.map(photo => photoStore('delete', photo.id)));
+        state = loadState(); renderAll(); showToast('Profilo eliminato');
+      }
+    }
     const day = event.target.closest('[data-date]');
     if (day) { selectedAgendaDate = selectedAgendaDate === day.dataset.date ? null : day.dataset.date; renderAgenda(); }
   });
@@ -493,7 +509,7 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=7').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=8').catch(() => {});
 }
 
 init();

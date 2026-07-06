@@ -119,11 +119,14 @@ select { border: 1px solid var(--line); border-radius: 11px; padding: 9px 32px 9
 .file-drop { min-height: 220px; place-items: center; overflow: hidden; border: 1px dashed #abad9f; border-radius: 17px; background: var(--bg); cursor: pointer; }.file-drop input { display: none; }.file-drop span { display: grid; place-items: center; gap: 5px; text-align: center; }.file-drop span b { font-size: 32px; }.file-drop span small { color: var(--muted); font-weight: 400; }.file-drop img { width: 100%; height: 240px; object-fit: cover; }
 .profile-note { margin: -10px 0 20px; color: var(--muted); font-size: 11px; line-height: 1.55; }
 .profile-list { display: grid; gap: 8px; margin-bottom: 20px; }
+.profile-row { display: grid; grid-template-columns: minmax(0, 1fr) 38px; gap: 7px; }
 .profile-option { width: 100%; display: flex; align-items: center; gap: 11px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 13px; background: transparent; text-align: left; }
 .profile-option:hover { border-color: var(--lime-dark); background: color-mix(in srgb, var(--lime), transparent 90%); }
 .profile-option.active { border-color: var(--lime-dark); background: color-mix(in srgb, var(--lime), transparent 84%); }
 .profile-initials { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--ink); color: var(--surface); font-size: 9px; font-weight: 800; }
 .profile-option div { flex: 1; }.profile-option strong, .profile-option small { display: block; }.profile-option strong { font-size: 11px; }.profile-option small { margin-top: 2px; color: var(--muted); font-size: 9px; }.profile-check { color: var(--lime-dark); font-weight: 800; }
+.profile-delete { width: 38px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--muted); font-size: 20px; }
+.profile-delete:hover { border-color: var(--coral); background: color-mix(in srgb, var(--coral), transparent 88%); color: var(--coral); }
 .toast { position: fixed; left: 50%; bottom: 25px; z-index: 100; padding: 12px 17px; border-radius: 12px; background: var(--ink); color: white; font-size: 11px; box-shadow: var(--shadow); opacity: 0; transform: translate(-50%, 18px); pointer-events: none; transition: .25s ease; }.toast.show { opacity: 1; transform: translate(-50%, 0); }
 .mobile-nav { display: none; }
 
@@ -134,12 +137,16 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
 .dark .primary-button { background: #aaff3f; color: #07110c; box-shadow: 0 0 24px rgba(170,255,63,.2); }
 .dark .modal input, .dark .modal select, .dark .modal textarea { background: #09130d; color: #eef9f0; }
 .dark .agenda-entry, .dark .compact-item { background: #09130d; }
-.dark .compact-icon, .dark .location-icon, .dark .mini-action:hover { background: #183021; color: #dfffbc; }
-.dark .stat-icon { filter: saturate(1.4) brightness(1.25); }
+.dark .compact-icon, .dark .location-icon, .dark .mini-action:hover { background: #1b3826; color: #dfffbc; box-shadow: inset 0 0 0 1px rgba(170,255,63,.08); }
+.dark .stat-icon { background: rgba(170,255,63,.13); color: #dfffbc; filter: none; box-shadow: 0 0 14px rgba(170,255,63,.09); }
 .dark .avatar { background: #aaff3f; color: #07110c; box-shadow: 0 0 18px rgba(170,255,63,.24); }
 .dark .photo-upload { background: rgba(170,255,63,.025); border-color: #315e40; }
-.dark .icon-button, .dark select, .dark .search-box { background: #0d1a13; color: #dfffbc; }
-.dark .round-add, .dark .profile-option, .dark .card-menu, .dark .mini-action { color: #dfffbc; }
+.dark .icon-button, .dark select, .dark .search-box { background: #0d1a13; color: #aaff3f; border-color: #315e40; }
+.dark .round-add, .dark .profile-option, .dark .profile-delete, .dark .card-menu, .dark .mini-action { color: #dfffbc; border-color: #315e40; }
+.dark .upload-icon { color: #07110c; box-shadow: 0 0 18px rgba(170,255,63,.17); }
+.dark .upload-arrow, .dark .nav-item span { color: #a8cdb3; }
+.dark .nav-item.active span { color: #aaff3f; }
+.dark .photo-delete { color: #fff; border: 1px solid rgba(170,255,63,.2); }
 .dark .progress-ring { filter: drop-shadow(0 0 8px rgba(170,255,63,.16)); }
 .dark .nav-item { color: #789682; }
 .dark .nav-item:hover, .dark .nav-item.active { color: #efffe9; background: rgba(170,255,63,.08); }
