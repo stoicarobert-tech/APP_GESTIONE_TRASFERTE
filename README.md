@@ -28,6 +28,7 @@ I dati sono salvati localmente sul dispositivo. Le attività e l'inventario usan
 - Agenda giornaliera con categorie Lavoro, Palestra, Gaming e Altro.
 - Totali automatici per settimana, mese o intero periodo.
 - Obiettivo settimanale modificabile.
+- Trasferta con destinazione, bandiera, date e countdown automatico.
 - Inventario con quantità, posizione, ricerca e scadenze.
 - Foto di frigo e spesa scattate direttamente dal telefono.
 - Tema chiaro/scuro, uso offline e layout responsive.

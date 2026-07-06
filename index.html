@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#171a15" />
     <meta name="description" content="Organizza giornate, ore, inventario e foto durante ogni trasferta." />
-    <link rel="manifest" href="manifest.webmanifest?v=8" />
-    <link rel="icon" href="icons/icon.svg?v=8" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=8" />
-    <link rel="stylesheet" href="styles.css?v=8" />
+    <link rel="manifest" href="manifest.webmanifest?v=9" />
+    <link rel="icon" href="icons/icon.svg?v=9" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=9" />
+    <link rel="stylesheet" href="styles.css?v=9" />
     <title>FOCUS — Ogni trasferta, organizzata</title>
   </head>
   <body>
@@ -27,10 +27,10 @@
         </nav>
 
         <div class="sidebar-bottom">
-          <div class="germany-card trip-card">
-            <span class="trip-mark" aria-hidden="true">↗</span>
-            <div><strong>La tua trasferta</strong><small id="journey-days">Tutto sotto controllo</small></div>
-          </div>
+          <button class="germany-card trip-card" data-open="trip" aria-label="Configura trasferta">
+            <span class="trip-mark" id="sidebar-trip-flag" aria-hidden="true">🌍</span>
+            <div><strong id="sidebar-trip-name">La tua trasferta</strong><small id="journey-days">Tocca per configurare</small></div>
+          </button>
           <button id="install-button" class="install-button" hidden>↓ Installa l’app</button>
           <button id="export-button" class="text-button">Esporta i tuoi dati</button>
         </div>
@@ -70,6 +70,18 @@
               <button class="link-button" id="goal-button">Modifica obiettivo →</button>
             </article>
           </div>
+
+          <button class="trip-countdown-card" id="trip-countdown-card" data-open="trip" aria-label="Configura trasferta e countdown">
+            <span class="trip-countdown-flag" id="trip-countdown-flag" aria-hidden="true">🌍</span>
+            <span class="trip-countdown-copy">
+              <span class="eyebrow">LA TUA TRASFERTA</span>
+              <strong id="trip-destination">Imposta destinazione e date</strong>
+              <small id="trip-dates">Tocca qui per iniziare il countdown</small>
+              <span class="trip-progress"><i id="trip-progress-bar"></i></span>
+            </span>
+            <span class="trip-days"><strong id="trip-countdown">—</strong><small id="trip-countdown-label">giorni</small></span>
+            <span class="trip-edit" aria-hidden="true">✎</span>
+          </button>
 
           <div class="section-heading">
             <div><p class="eyebrow">IL TUO TEMPO</p><h2>Dove vanno le tue ore</h2></div>
@@ -189,6 +201,18 @@
       </form>
     </dialog>
 
+    <dialog id="trip-dialog" class="modal small-modal">
+      <form id="trip-form" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow">COUNTDOWN</p><h2>La tua trasferta</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
+        <label>Dove vai?<input name="destination" required maxlength="50" placeholder="Es. Berlino" /></label>
+        <label>Paese e bandiera<select name="flag" required>
+          <option value="🌍">🌍 Altro paese</option><option value="🇩🇪">🇩🇪 Germania</option><option value="🇮🇹">🇮🇹 Italia</option><option value="🇫🇷">🇫🇷 Francia</option><option value="🇪🇸">🇪🇸 Spagna</option><option value="🇬🇧">🇬🇧 Regno Unito</option><option value="🇳🇱">🇳🇱 Paesi Bassi</option><option value="🇧🇪">🇧🇪 Belgio</option><option value="🇨🇭">🇨🇭 Svizzera</option><option value="🇦🇹">🇦🇹 Austria</option><option value="🇵🇱">🇵🇱 Polonia</option><option value="🇨🇿">🇨🇿 Repubblica Ceca</option><option value="🇷🇴">🇷🇴 Romania</option><option value="🇺🇸">🇺🇸 Stati Uniti</option>
+        </select></label>
+        <div class="form-row"><label>Data di inizio<input name="startDate" type="date" required /></label><label>Data di fine<input name="endDate" type="date" required /></label></div>
+        <button class="primary-button full" type="submit">Salva trasferta</button>
+      </form>
+    </dialog>
+
     <dialog id="profile-dialog" class="modal small-modal">
       <form id="profile-form" method="dialog">
         <div class="modal-head"><div><p class="eyebrow">PROFILI LOCALI</p><h2>Il tuo account</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
@@ -200,6 +224,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=8" defer></script>
+    <script src="app.js?v=9" defer></script>
   </body>
 </html>

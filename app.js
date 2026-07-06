@@ -170,7 +170,42 @@ function renderHeader() {
   $('#hero-summary').textContent = todayItems.length
     ? `${todayItems.length} ${todayItems.length === 1 ? 'impegno' : 'impegni'} · ${formatHours(total)} pianificate.`
     : 'Hai una giornata tutta da organizzare.';
-  $('#journey-days').textContent = `${state.activities.length} attività · ${state.inventory.length} prodotti`;
+}
+
+function renderTrip() {
+  const trip = state.settings.trip;
+  const card = $('#trip-countdown-card');
+  if (!trip?.destination || !trip?.startDate || !trip?.endDate) {
+    card.classList.remove('configured');
+    $('#sidebar-trip-flag').textContent = '🌍'; $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
+    $('#trip-countdown-flag').textContent = '🌍'; $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
+    $('#trip-countdown').textContent = '—'; $('#trip-countdown-label').textContent = 'giorni'; $('#trip-progress-bar').style.width = '0%';
+    return;
+  }
+
+  card.classList.add('configured');
+  const startIn = dateDiff(trip.startDate);
+  const endIn = dateDiff(trip.endDate);
+  const totalDays = Math.max(1, Math.round((parseLocalDate(trip.endDate) - parseLocalDate(trip.startDate)) / 86400000));
+  const elapsedDays = Math.min(totalDays, Math.max(0, Math.round((parseLocalDate(todayISO()) - parseLocalDate(trip.startDate)) / 86400000)));
+  const progress = startIn > 0 ? 0 : endIn < 0 ? 100 : Math.round(elapsedDays / totalDays * 100);
+  let count; let label; let sidebarStatus;
+  if (startIn > 0) {
+    count = startIn; label = startIn === 1 ? 'giorno alla partenza' : 'giorni alla partenza'; sidebarStatus = `Partenza tra ${startIn} ${startIn === 1 ? 'giorno' : 'giorni'}`;
+  } else if (endIn > 0) {
+    count = endIn; label = endIn === 1 ? 'giorno rimanente' : 'giorni rimanenti'; sidebarStatus = `${endIn} ${endIn === 1 ? 'giorno rimanente' : 'giorni rimanenti'}`;
+  } else if (endIn === 0) {
+    count = 0; label = 'ultimo giorno'; sidebarStatus = 'Ultimo giorno';
+  } else {
+    count = 0; label = 'trasferta conclusa'; sidebarStatus = 'Trasferta conclusa';
+  }
+
+  const flag = trip.flag || '🌍';
+  $('#sidebar-trip-flag').textContent = flag; $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
+  $('#trip-countdown-flag').textContent = flag; $('#trip-destination').textContent = trip.destination;
+  $('#trip-dates').textContent = `${formatDate(trip.startDate, 'short')} — ${formatDate(trip.endDate, 'short')}`;
+  $('#trip-countdown').textContent = count; $('#trip-countdown-label').textContent = label; $('#trip-progress-bar').style.width = `${progress}%`;
+  card.setAttribute('aria-label', `Trasferta a ${trip.destination}: ${sidebarStatus}. Tocca per modificare`);
 }
 
 function renderProfiles() {
@@ -317,7 +352,7 @@ async function renderPhotos() {
 }
 
 function renderAll() {
-  renderHeader(); renderProfiles(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderPhotos();
+  renderHeader(); renderTrip(); renderProfiles(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderPhotos();
   document.body.classList.toggle('dark', state.settings.theme === 'dark');
   $('#theme-button').textContent = state.settings.theme === 'dark' ? '☾' : '☼';
 }
@@ -348,6 +383,13 @@ function openDialog(type, data = null) {
     pendingPhoto = null; form.elements.date.value = todayISO(); $('#photo-preview').hidden = true; $('#file-prompt').hidden = false;
   }
   if (type === 'profile') renderProfiles();
+  if (type === 'trip') {
+    const trip = state.settings.trip || {};
+    form.elements.destination.value = trip.destination || '';
+    form.elements.flag.value = trip.flag || '🌍';
+    form.elements.startDate.value = trip.startDate || todayISO();
+    form.elements.endDate.value = trip.endDate || shiftDate(7);
+  }
   dialog.showModal();
 }
 
@@ -447,6 +489,14 @@ function bindEvents() {
     event.target.closest('dialog').close(); saveState(); showToast(data.id ? 'Prodotto aggiornato' : 'Prodotto aggiunto');
   });
 
+  $('#trip-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.target));
+    if (data.endDate < data.startDate) return showToast('La data di fine deve essere successiva all’inizio');
+    state.settings.trip = data;
+    event.target.closest('dialog').close(); saveState(); showToast('Trasferta e countdown aggiornati');
+  });
+
   $('#profile-form').addEventListener('submit', event => {
     event.preventDefault();
     const username = new FormData(event.target).get('username').trim().replace(/\s+/g, ' ');
@@ -509,7 +559,7 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=8').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=9').catch(() => {});
 }
 
 init();

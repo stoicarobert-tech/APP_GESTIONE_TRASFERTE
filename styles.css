@@ -38,7 +38,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .nav-item:hover, .nav-item.active { background: rgba(255,255,255,.08); color: white; }
 .nav-item.active span { color: var(--lime); }
 .sidebar-bottom { margin-top: auto; display: grid; gap: 10px; }
-.germany-card { display: flex; align-items: center; gap: 12px; padding: 15px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px; }
+.germany-card { width: 100%; display: flex; align-items: center; gap: 12px; padding: 15px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px; background: transparent; color: inherit; text-align: left; }
+.germany-card:hover { border-color: rgba(204,232,108,.35); background: rgba(204,232,108,.04); }
 .germany-card strong, .germany-card small { display: block; }
 .germany-card strong { font-size: 12px; }
 .germany-card small { color: #8f938a; font-size: 10px; margin-top: 4px; }
@@ -84,6 +85,15 @@ main { margin-left: 248px; min-height: 100vh; padding: 0 50px 70px; }
 .ring-wrap > div:last-child strong, .ring-wrap > div:last-child small { display: block; }.ring-wrap > div:last-child strong { font-size: 13px; }.ring-wrap > div:last-child small { margin-top: 5px; color: var(--muted); font-size: 11px; }
 .link-button { padding: 0; border: 0; background: transparent; color: var(--muted); text-align: left; font-size: 11px; font-weight: 600; }
 .link-button:hover { color: var(--ink); }
+
+.trip-countdown-card { width: 100%; min-height: 112px; margin-top: 18px; display: grid; grid-template-columns: 58px minmax(0,1fr) auto 28px; align-items: center; gap: 18px; padding: 22px 24px; border: 1px solid rgba(0,0,0,.035); border-radius: 22px; background: var(--surface); color: var(--ink); text-align: left; box-shadow: none; }
+.trip-countdown-card:hover { border-color: color-mix(in srgb, var(--lime-dark), transparent 55%); transform: translateY(-1px); }
+.trip-countdown-flag { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 17px; background: var(--surface-2); font-size: 31px; }
+.trip-countdown-copy { min-width: 0; display: block; }.trip-countdown-copy strong, .trip-countdown-copy small { display: block; }.trip-countdown-copy strong { margin-top: 6px; font: 800 16px Manrope; }.trip-countdown-copy small { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.trip-progress { height: 4px; margin-top: 12px; display: block; overflow: hidden; border-radius: 99px; background: var(--surface-2); }.trip-progress i { width: 0%; height: 100%; display: block; border-radius: inherit; background: var(--lime-dark); transition: width .35s ease; }
+.trip-days { min-width: 110px; display: block; text-align: right; }.trip-days strong, .trip-days small { display: block; }.trip-days strong { font: 800 35px/1 Manrope; letter-spacing: -1.5px; }.trip-days small { max-width: 115px; margin-top: 5px; color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .8px; }
+.trip-edit { color: var(--muted); font-size: 16px; text-align: right; }
+.trip-countdown-card.configured .trip-countdown-flag { background: color-mix(in srgb, var(--lime), transparent 82%); }
 
 .section-heading { margin: 45px 0 18px; display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .section-heading h2, .panel h2 { margin: 6px 0 0; font: 800 22px/1.1 Manrope; letter-spacing: -.8px; }
@@ -148,6 +158,10 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
 .dark .nav-item.active span { color: #aaff3f; }
 .dark .photo-delete { color: #fff; border: 1px solid rgba(170,255,63,.2); }
 .dark .progress-ring { filter: drop-shadow(0 0 8px rgba(170,255,63,.16)); }
+.dark .trip-countdown-card { border-color: #21412d; box-shadow: inset 0 0 0 1px rgba(170,255,63,.025); }
+.dark .trip-countdown-flag { background: #183021; box-shadow: 0 0 18px rgba(170,255,63,.08); }
+.dark .trip-progress i { background: #aaff3f; box-shadow: 0 0 10px rgba(170,255,63,.35); }
+.dark .trip-edit { color: #a8cdb3; }
 .dark .nav-item { color: #789682; }
 .dark .nav-item:hover, .dark .nav-item.active { color: #efffe9; background: rgba(170,255,63,.08); }
 .dark .toast { background: #aaff3f; color: #07110c; }
@@ -167,6 +181,7 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
   .section-heading { margin-top: 35px; align-items: center; }.section-heading h2 { font-size: 19px; }.section-heading .primary-button { padding: 11px 13px; font-size: 10px; }
   .stats-grid { display: flex; overflow-x: auto; margin-right: -18px; padding-right: 18px; scrollbar-width: none; }.stat-card { min-width: 180px; }
   .dashboard-grid { grid-template-columns: 1fr; }.panel { padding: 21px; }.expiring-panel { order: -1; }
+  .trip-countdown-card { grid-template-columns: 46px minmax(0,1fr) auto; gap: 12px; padding: 18px; }.trip-countdown-flag { width: 46px; height: 46px; border-radius: 14px; font-size: 25px; }.trip-days { min-width: 72px; }.trip-days strong { font-size: 28px; }.trip-days small { max-width: 76px; font-size: 7px; }.trip-edit { display: none; }
   .week-strip { gap: 5px; margin-left: -5px; margin-right: -5px; }.day-card { padding: 12px 3px; border-radius: 12px; }.day-card strong { font-size: 15px; }
   .agenda-list { padding: 5px 16px; }.agenda-entry { grid-template-columns: 58px 4px 1fr auto; gap: 9px; padding: 9px 7px; }.entry-actions .mini-action:first-child { display: none; }
   .inventory-toolbar { display: grid; }.inventory-overview { grid-template-columns: repeat(2, 1fr); }.inventory-grid { grid-template-columns: 1fr 1fr; }.inventory-card { padding: 16px; }.inventory-card-footer { display: block; }.expiry-pill { display: inline-block; margin-top: 10px; }
@@ -178,6 +193,7 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
 @media (max-width: 430px) {
   .inventory-grid, .photo-grid { grid-template-columns: 1fr; }.photo-card, .photo-card img { min-height: 280px; height: 280px; }
   .timeline-item { grid-template-columns: 50px 8px 1fr; }.duration-badge { display: none; }
+  .trip-countdown-card { grid-template-columns: 42px minmax(0,1fr) 66px; gap: 10px; }.trip-countdown-flag { width: 42px; height: 42px; font-size: 22px; }.trip-countdown-copy strong { font-size: 13px; }
 }
 
 body.dark .mobile-nav { background: rgba(4,10,7,.97); border-top: 1px solid #173021; }
