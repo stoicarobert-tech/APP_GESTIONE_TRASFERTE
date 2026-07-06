@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#171a15" />
     <meta name="description" content="Organizza giornate, ore, inventario e foto durante ogni trasferta." />
-    <link rel="manifest" href="manifest.webmanifest?v=11" />
-    <link rel="icon" href="icons/icon.svg?v=11" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=11" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="manifest" href="manifest.webmanifest?v=12" />
+    <link rel="icon" href="icons/icon.svg?v=12" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=12" />
+    <link rel="stylesheet" href="styles.css?v=12" />
     <title>FOCUS — Ogni trasferta, organizzata</title>
   </head>
   <body>
@@ -28,7 +28,7 @@
 
         <div class="sidebar-bottom">
           <button class="germany-card trip-card" data-open="trip" aria-label="Configura trasferta">
-            <span class="trip-mark" id="sidebar-trip-flag" aria-hidden="true">🌍</span>
+            <svg class="trip-mark" id="sidebar-trip-flag" aria-hidden="true"><use id="sidebar-trip-flag-use" href="flags.svg#world"></use></svg>
             <div><strong id="sidebar-trip-name">La tua trasferta</strong><small id="journey-days">Tocca per configurare</small></div>
           </button>
           <button id="install-button" class="install-button" hidden>↓ Installa l’app</button>
@@ -72,7 +72,7 @@
           </div>
 
           <button class="trip-countdown-card" id="trip-countdown-card" data-open="trip" aria-label="Configura trasferta e countdown">
-            <span class="trip-countdown-flag" id="trip-countdown-flag" aria-hidden="true">🌍</span>
+            <svg class="trip-countdown-flag" id="trip-countdown-flag" aria-hidden="true"><use id="trip-countdown-flag-use" href="flags.svg#world"></use></svg>
             <span class="trip-countdown-copy">
               <span class="eyebrow">LA TUA TRASFERTA</span>
               <strong id="trip-destination">Imposta destinazione e date</strong>
@@ -205,8 +205,8 @@
       <form id="trip-form" method="dialog">
         <div class="modal-head"><div><p class="eyebrow">COUNTDOWN</p><h2>La tua trasferta</h2></div><button type="button" class="modal-close" aria-label="Chiudi">×</button></div>
         <label>Dove vai?<input name="destination" required maxlength="50" placeholder="Es. Berlino" /></label>
-        <label>Paese e bandiera<select name="flag" required>
-          <option value="🌍">🌍 Altro paese</option><option value="🇩🇪">🇩🇪 Germania</option><option value="🇮🇹">🇮🇹 Italia</option><option value="🇫🇷">🇫🇷 Francia</option><option value="🇪🇸">🇪🇸 Spagna</option><option value="🇬🇧">🇬🇧 Regno Unito</option><option value="🇳🇱">🇳🇱 Paesi Bassi</option><option value="🇧🇪">🇧🇪 Belgio</option><option value="🇨🇭">🇨🇭 Svizzera</option><option value="🇦🇹">🇦🇹 Austria</option><option value="🇵🇱">🇵🇱 Polonia</option><option value="🇨🇿">🇨🇿 Repubblica Ceca</option><option value="🇷🇴">🇷🇴 Romania</option><option value="🇺🇸">🇺🇸 Stati Uniti</option>
+        <label>Paese e bandiera<select name="country" required>
+          <option value="world">🌍 Altro paese</option><option value="de">🇩🇪 Germania</option><option value="it">🇮🇹 Italia</option><option value="fr">🇫🇷 Francia</option><option value="es">🇪🇸 Spagna</option><option value="gb">🇬🇧 Regno Unito</option><option value="nl">🇳🇱 Paesi Bassi</option><option value="be">🇧🇪 Belgio</option><option value="ch">🇨🇭 Svizzera</option><option value="at">🇦🇹 Austria</option><option value="pl">🇵🇱 Polonia</option><option value="cz">🇨🇿 Repubblica Ceca</option><option value="ro">🇷🇴 Romania</option><option value="us">🇺🇸 Stati Uniti</option>
         </select></label>
         <div class="form-row"><label>Data di inizio<input name="startDate" type="date" required /></label><label>Data di fine<input name="endDate" type="date" required /></label></div>
         <button class="primary-button full" type="submit">Salva trasferta</button>
@@ -226,6 +226,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=11" defer></script>
+    <script src="app.js?v=12" defer></script>
   </body>
 </html>

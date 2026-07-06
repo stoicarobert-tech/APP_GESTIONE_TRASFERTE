@@ -1,5 +1,5 @@
-const CACHE = 'focus-v11';
-const ASSETS = ['./', './index.html', './styles.css?v=11', './app.js?v=11', './manifest.webmanifest?v=11', './icons/icon.svg?v=11', './icons/icon-maskable.svg?v=11'];
+const CACHE = 'focus-v12';
+const ASSETS = ['./', './index.html', './styles.css?v=12', './app.js?v=12', './manifest.webmanifest?v=12', './flags.svg', './icons/icon.svg?v=12', './icons/icon-maskable.svg?v=12'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
