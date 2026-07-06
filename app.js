@@ -61,7 +61,15 @@ function currentProfileId() {
 }
 
 function profileDataKey() {
-  return currentProfileId() === 'default' ? STORAGE_KEY : `focus-data-v1-${currentProfileId()}`;
+  return profileDataKeyFor(currentProfileId());
+}
+
+function profileDataKeyFor(profileId) {
+  return profileId === 'default' ? STORAGE_KEY : `focus-data-v1-${profileId}`;
+}
+
+function photoBelongsToProfile(photo, profileId) {
+  return photo.owner ? photo.owner === profileId : profileId === 'default';
 }
 
 function emptyProfileData() {
@@ -213,11 +221,12 @@ function renderProfiles() {
   const avatar = $('.avatar');
   avatar.textContent = currentProfileId() === 'default' ? 'TU' : profileInitials(current?.name);
   avatar.title = current?.name || 'Profilo';
+  const canDeleteProfiles = profiles.accounts.length > 1;
   $('#profile-list').innerHTML = profiles.accounts.map(account => `<div class="profile-row">
     <button type="button" class="profile-option ${account.id === currentProfileId() ? 'active' : ''}" data-switch-profile="${account.id}">
       <span class="profile-initials">${profileInitials(account.name)}</span><div><strong>${escapeHTML(account.name)}</strong><small>${account.id === currentProfileId() ? 'Profilo attivo' : 'Tocca per accedere'}</small></div>${account.id === currentProfileId() ? '<span class="profile-check">✓</span>' : ''}
     </button>
-    ${account.id !== 'default' ? `<button type="button" class="profile-delete" data-delete-profile="${account.id}" aria-label="Elimina profilo ${escapeHTML(account.name)}">×</button>` : ''}
+    ${canDeleteProfiles ? `<button type="button" class="profile-delete" data-delete-profile="${account.id}" aria-label="Elimina profilo ${escapeHTML(account.name)}">×</button>` : ''}
   </div>`).join('');
 }
 
@@ -451,9 +460,9 @@ function bindEvents() {
       const account = profiles.accounts.find(item => item.id === profileId);
       if (account && confirm(`Eliminare il profilo "${account.name}" e tutti i suoi dati?`)) {
         profiles.accounts = profiles.accounts.filter(item => item.id !== profileId);
-        if (currentProfileId() === profileId) profiles.current = 'default';
-        localStorage.removeItem(`focus-data-v1-${profileId}`); saveProfiles();
-        const profilePhotos = (await photoStore('getAll')).filter(photo => photo.owner === profileId);
+        if (currentProfileId() === profileId) profiles.current = profiles.accounts[0].id;
+        localStorage.removeItem(profileDataKeyFor(profileId)); saveProfiles();
+        const profilePhotos = (await photoStore('getAll')).filter(photo => photoBelongsToProfile(photo, profileId));
         await Promise.all(profilePhotos.map(photo => photoStore('delete', photo.id)));
         state = loadState(); renderAll(); showToast('Profilo eliminato');
       }
@@ -535,10 +544,40 @@ function bindEvents() {
 
   $('#export-button').addEventListener('click', async () => {
     const allPhotos = await photoStore('getAll');
-    const photos = allPhotos.filter(photo => photo.owner ? photo.owner === currentProfileId() : currentProfileId() === 'default');
+    const photos = allPhotos.filter(photo => photoBelongsToProfile(photo, currentProfileId()));
     const account = profiles.accounts.find(item => item.id === currentProfileId());
     const blob = new Blob([JSON.stringify({ account, ...state, photos, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `focus-backup-${todayISO()}.json`; link.click(); URL.revokeObjectURL(link.href); showToast('Backup esportato');
+  });
+
+  $('#import-profile-button').addEventListener('click', () => $('#import-profile-input').click());
+  $('#import-profile-input').addEventListener('change', async event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const backup = JSON.parse(await file.text());
+      if (!Array.isArray(backup.activities) || !Array.isArray(backup.inventory) || !backup.settings || typeof backup.settings !== 'object') {
+        throw new Error('Backup non valido');
+      }
+      const existingMain = profiles.accounts.find(account => account.id === 'default');
+      if (existingMain && !confirm('Sostituire il profilo principale e tutti i suoi dati con questo backup?')) return;
+      const importedState = { activities: backup.activities, inventory: backup.inventory, settings: backup.settings };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(importedState));
+      if (existingMain) existingMain.name = backup.account?.name || 'Profilo principale';
+      else profiles.accounts.unshift({ id: 'default', name: backup.account?.name || 'Profilo principale' });
+      profiles.current = 'default'; saveProfiles();
+      const allPhotos = await photoStore('getAll');
+      const oldMainPhotos = allPhotos.filter(photo => photoBelongsToProfile(photo, 'default'));
+      await Promise.all(oldMainPhotos.map(photo => photoStore('delete', photo.id)));
+      if (Array.isArray(backup.photos)) {
+        await Promise.all(backup.photos.filter(photo => photo?.data).map(photo => photoStore('put', { ...photo, id: uid(), owner: 'default' })));
+      }
+      state = loadState(); event.target.closest('dialog')?.close(); renderAll(); showToast('Profilo principale importato');
+    } catch (_) {
+      showToast('Il file non è un backup FOCUS valido');
+    } finally {
+      event.target.value = '';
+    }
   });
 
   const installButtons = [$('#install-button'), $('#install-button-mobile')];
@@ -559,7 +598,7 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=9').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=10').catch(() => {});
 }
 
 init();

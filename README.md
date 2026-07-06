@@ -33,5 +33,6 @@ I dati sono salvati localmente sul dispositivo. Le attività e l'inventario usan
 - Foto di frigo e spesa scattate direttamente dal telefono.
 - Tema chiaro/scuro, uso offline e layout responsive.
 - Profili locali con username e dati separati, persistenti sul dispositivo.
+- Importazione del backup del profilo principale ed eliminazione sicura dei profili.
 
 Al primo avvio sono presenti pochi dati di esempio, tutti modificabili o eliminabili.

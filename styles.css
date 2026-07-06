@@ -137,6 +137,8 @@ select { border: 1px solid var(--line); border-radius: 11px; padding: 9px 32px 9
 .profile-option div { flex: 1; }.profile-option strong, .profile-option small { display: block; }.profile-option strong { font-size: 11px; }.profile-option small { margin-top: 2px; color: var(--muted); font-size: 9px; }.profile-check { color: var(--lime-dark); font-weight: 800; }
 .profile-delete { width: 38px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--muted); font-size: 20px; }
 .profile-delete:hover { border-color: var(--coral); background: color-mix(in srgb, var(--coral), transparent 88%); color: var(--coral); }
+.import-profile-button { width: 100%; margin-top: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--muted); font: 700 11px Manrope; }
+.import-profile-button:hover { border-color: var(--lime-dark); color: var(--ink); }
 .toast { position: fixed; left: 50%; bottom: 25px; z-index: 100; padding: 12px 17px; border-radius: 12px; background: var(--ink); color: white; font-size: 11px; box-shadow: var(--shadow); opacity: 0; transform: translate(-50%, 18px); pointer-events: none; transition: .25s ease; }.toast.show { opacity: 1; transform: translate(-50%, 0); }
 .mobile-nav { display: none; }
 
@@ -152,7 +154,7 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
 .dark .avatar { background: #aaff3f; color: #07110c; box-shadow: 0 0 18px rgba(170,255,63,.24); }
 .dark .photo-upload { background: rgba(170,255,63,.025); border-color: #315e40; }
 .dark .icon-button, .dark select, .dark .search-box { background: #0d1a13; color: #aaff3f; border-color: #315e40; }
-.dark .round-add, .dark .profile-option, .dark .profile-delete, .dark .card-menu, .dark .mini-action { color: #dfffbc; border-color: #315e40; }
+.dark .round-add, .dark .profile-option, .dark .profile-delete, .dark .import-profile-button, .dark .card-menu, .dark .mini-action { color: #dfffbc; border-color: #315e40; }
 .dark .upload-icon { color: #07110c; box-shadow: 0 0 18px rgba(170,255,63,.17); }
 .dark .upload-arrow, .dark .nav-item span { color: #a8cdb3; }
 .dark .nav-item.active span { color: #aaff3f; }
