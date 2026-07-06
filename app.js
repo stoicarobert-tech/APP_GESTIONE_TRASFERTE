@@ -186,8 +186,8 @@ function renderTrip() {
   const card = $('#trip-countdown-card');
   if (!trip?.destination || !trip?.startDate || !trip?.endDate) {
     card.classList.remove('configured');
-    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
-    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
+    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=13#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
+    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=13#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
     $('#trip-countdown').textContent = '—'; $('#trip-countdown-label').textContent = 'giorni'; $('#trip-progress-bar').style.width = '0%';
     return;
   }
@@ -210,8 +210,8 @@ function renderTrip() {
   }
 
   const country = trip.country || legacyCountryCodes[trip.flag] || 'world';
-  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
-  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg#${country}`); $('#trip-destination').textContent = trip.destination;
+  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=13#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
+  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=13#${country}`); $('#trip-destination').textContent = trip.destination;
   $('#trip-dates').textContent = `${formatDate(trip.startDate, 'short')} — ${formatDate(trip.endDate, 'short')}`;
   $('#trip-countdown').textContent = count; $('#trip-countdown-label').textContent = label; $('#trip-progress-bar').style.width = `${progress}%`;
   card.setAttribute('aria-label', `Trasferta a ${trip.destination}: ${sidebarStatus}. Tocca per modificare`);
@@ -599,7 +599,15 @@ async function init() {
   const initialView = location.hash.slice(1);
   if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=12').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register('./sw.js').then(registration => registration.update()).catch(() => {});
+  }
 }
 
 init();

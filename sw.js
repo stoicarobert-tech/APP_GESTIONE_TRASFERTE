@@ -1,5 +1,5 @@
-const CACHE = 'focus-v12';
-const ASSETS = ['./', './index.html', './styles.css?v=12', './app.js?v=12', './manifest.webmanifest?v=12', './flags.svg', './icons/icon.svg?v=12', './icons/icon-maskable.svg?v=12'];
+const CACHE = 'focus-v13';
+const ASSETS = ['./index.html', './styles.css?v=13', './app.js?v=13', './manifest.webmanifest?v=13', './flags.svg?v=13', './icons/icon.svg?v=13', './icons/icon-maskable.svg?v=13'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
@@ -13,11 +13,21 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        const copy = response.clone();
+        caches.open(CACHE).then(cache => cache.put('./index.html', copy));
+        return response;
+      }).catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();
       caches.open(CACHE).then(cache => cache.put(event.request, copy));
       return response;
-    }).catch(() => caches.match('./index.html')))
+    }))
   );
 });
