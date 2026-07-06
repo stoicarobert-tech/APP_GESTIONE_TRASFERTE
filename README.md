@@ -2,7 +2,7 @@
 
 Una PWA in italiano per organizzare ogni trasferta: agenda, conteggio ore, profili locali, inventario e foto di frigo e spesa.
 
-**App online:** https://stoicarobert-tech.github.io/APP_GESTIONE_TRASFERTE/
+**App online:** https://stoicarobert-tech.github.io/FOCUS/
 
 ## Avvio sul computer
 
