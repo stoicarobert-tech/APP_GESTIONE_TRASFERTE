@@ -166,6 +166,8 @@ body.dark .sidebar { background: #040a07; border-right: 1px solid #173021; }
 .dark .trip-edit { color: #a8cdb3; }
 .dark .nav-item { color: #789682; }
 .dark .nav-item:hover, .dark .nav-item.active { color: #efffe9; background: rgba(170,255,63,.08); }
+.dark .day-card.active, .dark .chip.active { background: #aaff3f; color: #07110c; border-color: #aaff3f; }
+.dark .day-card.active small { color: #07110c; opacity: .72; }
 .dark .toast { background: #aaff3f; color: #07110c; }
 
 @media (max-width: 1050px) {
