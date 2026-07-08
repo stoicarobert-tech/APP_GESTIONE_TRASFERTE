@@ -35,6 +35,12 @@ const starterData = {
     { id: uid(), name: 'Pasta', quantity: '3 pacchi', location: 'Dispensa', expiry: '', notes: 'Dato di esempio' },
     { id: uid(), name: 'Verdure miste', quantity: '1 busta', location: 'Freezer', expiry: shiftDate(30), notes: 'Dato di esempio' }
   ],
+  backpack: [
+    { id: uid(), name: 'Documento / carta d’identità', category: 'Documenti', quantity: '', notes: 'Controlla validità prima di partire', done: false },
+    { id: uid(), name: 'Caricabatterie telefono', category: 'Tech', quantity: '1', notes: '', done: false },
+    { id: uid(), name: 'Cambio palestra', category: 'Palestra', quantity: '1 set', notes: 'Maglia, pantaloncini, scarpe', done: false },
+    { id: uid(), name: 'Beauty case', category: 'Igiene', quantity: '', notes: 'Spazzolino, deodorante, medicine base', done: false }
+  ],
   settings: { weeklyGoal: 40, theme: 'light', journeyStart: '' }
 };
 
@@ -42,6 +48,7 @@ let profiles = loadProfiles();
 let state = loadState();
 let selectedActivityFilter = 'all';
 let selectedPhotoFilter = 'all';
+let selectedBackpackFilter = 'all';
 let selectedAgendaDate = null;
 let pendingPhoto = null;
 let installPrompt = null;
@@ -74,14 +81,22 @@ function photoBelongsToProfile(photo, profileId) {
 }
 
 function emptyProfileData() {
-  return { activities: [], inventory: [], settings: { weeklyGoal: 40, theme: 'light', journeyStart: '' } };
+  return { activities: [], inventory: [], backpack: [], settings: { weeklyGoal: 40, theme: 'light', journeyStart: '' } };
 }
 
 function loadState() {
   const key = profileDataKey();
   try {
     const saved = JSON.parse(localStorage.getItem(key));
-    if (saved?.activities && saved?.inventory) return saved;
+    if (saved?.activities && saved?.inventory) {
+      const migrated = {
+        ...saved,
+        backpack: Array.isArray(saved.backpack) ? saved.backpack.map(item => ({ ...item, done: Boolean(item.done) })) : [],
+        settings: { weeklyGoal: 40, theme: 'light', journeyStart: '', ...(saved.settings || {}) }
+      };
+      localStorage.setItem(key, JSON.stringify(migrated));
+      return migrated;
+    }
   } catch (_) { /* create a clean profile */ }
   const initial = currentProfileId() === 'default' ? structuredClone(starterData) : emptyProfileData();
   localStorage.setItem(key, JSON.stringify(initial));
@@ -186,8 +201,8 @@ function renderTrip() {
   const card = $('#trip-countdown-card');
   if (!trip?.destination || !trip?.startDate || !trip?.endDate) {
     card.classList.remove('configured');
-    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=13#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
-    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=13#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
+    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=14#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
+    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=14#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
     $('#trip-countdown').textContent = '—'; $('#trip-countdown-label').textContent = 'giorni'; $('#trip-progress-bar').style.width = '0%';
     return;
   }
@@ -210,8 +225,8 @@ function renderTrip() {
   }
 
   const country = trip.country || legacyCountryCodes[trip.flag] || 'world';
-  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=13#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
-  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=13#${country}`); $('#trip-destination').textContent = trip.destination;
+  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=14#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
+  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=14#${country}`); $('#trip-destination').textContent = trip.destination;
   $('#trip-dates').textContent = `${formatDate(trip.startDate, 'short')} — ${formatDate(trip.endDate, 'short')}`;
   $('#trip-countdown').textContent = count; $('#trip-countdown-label').textContent = label; $('#trip-progress-bar').style.width = `${progress}%`;
   card.setAttribute('aria-label', `Trasferta a ${trip.destination}: ${sidebarStatus}. Tocca per modificare`);
@@ -302,6 +317,10 @@ function locationIcon(location) {
   return ({ Frigo: '❄', Freezer: '✦', Dispensa: '▤', Bagno: '◌', Altro: '□' })[location] || '□';
 }
 
+function backpackIcon(category) {
+  return ({ Documenti: '▣', Tech: '⌁', Vestiti: '◧', Igiene: '◎', Palestra: '◆', Cucina: '▤', Extra: '●' })[category] || '●';
+}
+
 function expiryText(expiry) {
   if (!expiry) return { text: 'Nessuna scadenza', soon: false };
   const days = dateDiff(expiry);
@@ -327,6 +346,34 @@ function renderInventory() {
       <button class="mini-action" data-delete-item="${item.id}" aria-label="Elimina prodotto" style="position:absolute;right:13px;bottom:13px">×</button>
     </article>`;
   }).join('') : emptyState('▦', 'Inventario vuoto', 'Aggiungi ciò che hai in casa');
+}
+
+function renderBackpack() {
+  const allItems = Array.isArray(state.backpack) ? state.backpack : [];
+  const done = allItems.filter(item => item.done).length;
+  const total = allItems.length;
+  const percent = total ? Math.round(done / total * 100) : 0;
+  $('#backpack-percent').textContent = `${percent}%`;
+  $('#backpack-progress').style.width = `${percent}%`;
+  $('#backpack-title').textContent = total
+    ? `${done}/${total} cose già pronte.`
+    : 'Tieni a mente cosa portare.';
+  $('#backpack-summary').textContent = total
+    ? (percent === 100 ? 'Tutto spuntato. Zaino pronto, niente panico da porta di casa.' : 'Spunta ogni cosa appena la metti nello zaino o in valigia.')
+    : 'Aggiungi documenti, tech, vestiti, igiene e tutto ciò che non vuoi dimenticare.';
+
+  let items = [...allItems].sort((a, b) => Number(a.done) - Number(b.done) || a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  if (selectedBackpackFilter === 'todo') items = items.filter(item => !item.done);
+  if (selectedBackpackFilter === 'done') items = items.filter(item => item.done);
+  $('#backpack-list').innerHTML = items.length ? items.map(item => `<article class="backpack-item ${item.done ? 'done' : ''}">
+    <button class="backpack-check" data-toggle-backpack="${item.id}" aria-label="${item.done ? 'Segna da fare' : 'Segna completato'}">${item.done ? '✓' : ''}</button>
+    <span class="backpack-icon">${backpackIcon(item.category)}</span>
+    <div class="backpack-copy">
+      <strong>${escapeHTML(item.name)}</strong>
+      <small>${escapeHTML(item.category)}${item.quantity ? ` · ${escapeHTML(item.quantity)}` : ''}${item.notes ? ` · ${escapeHTML(item.notes)}` : ''}</small>
+    </div>
+    <span class="entry-actions"><button class="mini-action" data-edit-backpack="${item.id}" aria-label="Modifica">✎</button><button class="mini-action" data-delete-backpack="${item.id}" aria-label="Elimina">×</button></span>
+  </article>`).join('') : emptyState('▥', selectedBackpackFilter === 'done' ? 'Niente completati' : 'Backpack vuoto', selectedBackpackFilter === 'done' ? 'Quando spunti qualcosa comparirà qui' : 'Aggiungi la prima cosa da portare');
 }
 
 async function openPhotoDB() {
@@ -362,7 +409,7 @@ async function renderPhotos() {
 }
 
 function renderAll() {
-  renderHeader(); renderTrip(); renderProfiles(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderPhotos();
+  renderHeader(); renderTrip(); renderProfiles(); renderStats(); renderToday(); renderAgenda(); renderInventory(); renderBackpack(); renderPhotos();
   document.body.classList.toggle('dark', state.settings.theme === 'dark');
   $('#theme-button').textContent = state.settings.theme === 'dark' ? '☾' : '☼';
 }
@@ -389,6 +436,10 @@ function openDialog(type, data = null) {
     if (data) Object.keys(data).forEach(key => form.elements[key] && (form.elements[key].value = data[key]));
   }
   if (type === 'item' && data) Object.keys(data).forEach(key => form.elements[key] && (form.elements[key].value = data[key]));
+  if (type === 'backpack') {
+    if (data) Object.keys(data).forEach(key => form.elements[key] && (form.elements[key].value = data[key]));
+    if (data) form.elements.id.value = data.id;
+  }
   if (type === 'photo') {
     pendingPhoto = null; form.elements.date.value = todayISO(); $('#photo-preview').hidden = true; $('#file-prompt').hidden = false;
   }
@@ -445,6 +496,17 @@ function bindEvents() {
     if (deleteItem && confirm('Eliminare questo prodotto?')) {
       state.inventory = state.inventory.filter(i => i.id !== deleteItem.dataset.deleteItem); saveState(); showToast('Prodotto eliminato');
     }
+    const toggleBackpack = event.target.closest('[data-toggle-backpack]');
+    if (toggleBackpack) {
+      state.backpack = state.backpack.map(item => item.id === toggleBackpack.dataset.toggleBackpack ? { ...item, done: !item.done } : item);
+      saveState(); showToast('Backpack aggiornato');
+    }
+    const editBackpack = event.target.closest('[data-edit-backpack]');
+    if (editBackpack) openDialog('backpack', state.backpack.find(item => item.id === editBackpack.dataset.editBackpack));
+    const deleteBackpack = event.target.closest('[data-delete-backpack]');
+    if (deleteBackpack && confirm('Eliminare questa cosa dal backpack?')) {
+      state.backpack = state.backpack.filter(item => item.id !== deleteBackpack.dataset.deleteBackpack); saveState(); showToast('Cosa eliminata dal backpack');
+    }
     const deletePhoto = event.target.closest('[data-delete-photo]');
     if (deletePhoto && confirm('Eliminare questa foto?')) {
       await photoStore('delete', deletePhoto.dataset.deletePhoto); renderPhotos(); showToast('Foto eliminata');
@@ -478,6 +540,9 @@ function bindEvents() {
   $$('#photo-filters .chip').forEach(button => button.addEventListener('click', () => {
     selectedPhotoFilter = button.dataset.filter; $$('#photo-filters .chip').forEach(b => b.classList.toggle('active', b === button)); renderPhotos();
   }));
+  $$('#backpack-filters .chip').forEach(button => button.addEventListener('click', () => {
+    selectedBackpackFilter = button.dataset.filter; $$('#backpack-filters .chip').forEach(b => b.classList.toggle('active', b === button)); renderBackpack();
+  }));
   $('#stats-range').addEventListener('change', renderStats);
   $('#inventory-search').addEventListener('input', renderInventory);
   $('#inventory-location').addEventListener('change', renderInventory);
@@ -497,6 +562,21 @@ function bindEvents() {
     if (data.id) state.inventory = state.inventory.map(i => i.id === data.id ? data : i);
     else state.inventory.push({ ...data, id: uid() });
     event.target.closest('dialog').close(); saveState(); showToast(data.id ? 'Prodotto aggiornato' : 'Prodotto aggiunto');
+  });
+
+  $('#backpack-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.target));
+    data.name = data.name.trim();
+    data.quantity = data.quantity.trim();
+    data.notes = data.notes.trim();
+    if (!data.name) return showToast('Inserisci cosa vuoi portare');
+    if (data.id) {
+      state.backpack = state.backpack.map(item => item.id === data.id ? { ...item, ...data, done: Boolean(item.done) } : item);
+    } else {
+      state.backpack.push({ ...data, id: uid(), done: false });
+    }
+    event.target.closest('dialog').close(); saveState(); showToast(data.id ? 'Backpack aggiornato' : 'Aggiunto al backpack');
   });
 
   $('#trip-form').addEventListener('submit', event => {
@@ -562,7 +642,7 @@ function bindEvents() {
       }
       const existingMain = profiles.accounts.find(account => account.id === 'default');
       if (existingMain && !confirm('Sostituire il profilo principale e tutti i suoi dati con questo backup?')) return;
-      const importedState = { activities: backup.activities, inventory: backup.inventory, settings: backup.settings };
+      const importedState = { activities: backup.activities, inventory: backup.inventory, backpack: Array.isArray(backup.backpack) ? backup.backpack : [], settings: backup.settings };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(importedState));
       if (existingMain) existingMain.name = backup.account?.name || 'Profilo principale';
       else profiles.accounts.unshift({ id: 'default', name: backup.account?.name || 'Profilo principale' });
@@ -597,7 +677,7 @@ function bindEvents() {
 async function init() {
   bindEvents();
   const initialView = location.hash.slice(1);
-  if (['oggi', 'agenda', 'inventario', 'foto'].includes(initialView)) showView(initialView);
+  if (['oggi', 'agenda', 'inventario', 'backpack', 'foto'].includes(initialView)) showView(initialView);
   renderAll();
   if ('serviceWorker' in navigator) {
     let refreshing = false;
