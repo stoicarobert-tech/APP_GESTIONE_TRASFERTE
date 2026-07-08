@@ -30,6 +30,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: var(--lime); transform: rotate(-4deg); }
 .focus-glyph { width: 23px; height: 23px; position: relative; display: grid; place-items: center; border: 3px solid #171a15; border-radius: 50%; }
 .focus-glyph::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #171a15; }
+.backpack-glyph { --pack: currentColor; width: 19px; height: 22px; position: relative; display: inline-block; flex: 0 0 auto; border: 2px solid var(--pack); border-radius: 7px 7px 5px 5px; }
+.backpack-glyph::before { content: ''; position: absolute; left: 50%; top: -7px; width: 9px; height: 7px; border: 2px solid var(--pack); border-bottom: 0; border-radius: 8px 8px 0 0; transform: translateX(-50%); }
+.backpack-glyph::after { content: ''; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 6px; border: 2px solid var(--pack); border-radius: 4px; }
+.nav-backpack-glyph { margin: 0 auto; }
 .brand strong { display: block; font: 800 22px/1 Manrope; letter-spacing: -.7px; }
 .brand small { display: block; margin-top: 5px; color: #9da098; font-size: 11px; }
 .side-nav { display: grid; gap: 7px; margin-top: 58px; }
@@ -99,6 +103,7 @@ main { margin-left: 248px; min-height: 100vh; padding: 0 50px 70px; }
 .section-heading h2, .panel h2 { margin: 6px 0 0; font: 800 22px/1.1 Manrope; letter-spacing: -.8px; }
 .heading-actions { display: flex; align-items: center; gap: 9px; }
 .backpack-shortcut { display: grid; place-items: center; border-radius: 13px; color: var(--muted); font-size: 18px; }
+.backpack-shortcut .backpack-glyph { width: 18px; height: 21px; }
 .backpack-shortcut:hover { border-color: var(--lime-dark); color: var(--ink); background: color-mix(in srgb, var(--lime), transparent 86%); }
 select { border: 1px solid var(--line); border-radius: 11px; padding: 9px 32px 9px 12px; background: var(--surface); color: var(--muted); font-size: 11px; }
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }

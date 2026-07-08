@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#171a15" />
     <meta name="description" content="Organizza giornate, ore, inventario e foto durante ogni trasferta." />
-    <link rel="manifest" href="manifest.webmanifest?v=14" />
-    <link rel="icon" href="icons/icon.svg?v=14" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=14" />
-    <link rel="stylesheet" href="styles.css?v=14" />
+    <link rel="manifest" href="manifest.webmanifest?v=15" />
+    <link rel="icon" href="icons/icon.svg?v=15" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg?v=15" />
+    <link rel="stylesheet" href="styles.css?v=15" />
     <title>FOCUS — Ogni trasferta, organizzata</title>
   </head>
   <body>
@@ -23,13 +23,13 @@
           <button class="nav-item active" data-view="oggi"><span>⌂</span> Oggi</button>
           <button class="nav-item" data-view="agenda"><span>◷</span> Agenda</button>
           <button class="nav-item" data-view="inventario"><span>▦</span> Inventario</button>
-          <button class="nav-item" data-view="backpack"><span>▥</span> Backpack</button>
+          <button class="nav-item" data-view="backpack"><span class="backpack-glyph nav-backpack-glyph" aria-hidden="true"></span> Backpack</button>
           <button class="nav-item" data-view="foto"><span>◉</span> Foto</button>
         </nav>
 
         <div class="sidebar-bottom">
           <button class="germany-card trip-card" data-open="trip" aria-label="Configura trasferta">
-            <svg class="trip-mark" id="sidebar-trip-flag" aria-hidden="true"><use id="sidebar-trip-flag-use" href="flags.svg?v=14#world"></use></svg>
+            <svg class="trip-mark" id="sidebar-trip-flag" aria-hidden="true"><use id="sidebar-trip-flag-use" href="flags.svg?v=15#world"></use></svg>
             <div><strong id="sidebar-trip-name">La tua trasferta</strong><small id="journey-days">Tocca per configurare</small></div>
           </button>
           <button id="install-button" class="install-button" hidden>↓ Installa l’app</button>
@@ -73,7 +73,7 @@
           </div>
 
           <button class="trip-countdown-card" id="trip-countdown-card" data-open="trip" aria-label="Configura trasferta e countdown">
-            <svg class="trip-countdown-flag" id="trip-countdown-flag" aria-hidden="true"><use id="trip-countdown-flag-use" href="flags.svg?v=14#world"></use></svg>
+            <svg class="trip-countdown-flag" id="trip-countdown-flag" aria-hidden="true"><use id="trip-countdown-flag-use" href="flags.svg?v=15#world"></use></svg>
             <span class="trip-countdown-copy">
               <span class="eyebrow">LA TUA TRASFERTA</span>
               <strong id="trip-destination">Imposta destinazione e date</strong>
@@ -123,7 +123,7 @@
           <div class="section-heading inventory-heading">
             <div><p class="eyebrow">ZERO SPRECHI</p><h2>Inventario di casa</h2></div>
             <div class="heading-actions">
-              <button class="icon-button backpack-shortcut" data-go="backpack" aria-label="Apri Backpack">▥</button>
+              <button class="icon-button backpack-shortcut" data-go="backpack" aria-label="Apri Backpack"><span class="backpack-glyph" aria-hidden="true"></span></button>
               <button class="primary-button" data-open="item">＋ Aggiungi prodotto</button>
             </div>
           </div>
@@ -262,6 +262,6 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=14" defer></script>
+    <script src="app.js?v=15" defer></script>
   </body>
 </html>

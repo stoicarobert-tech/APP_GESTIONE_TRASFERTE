@@ -201,8 +201,8 @@ function renderTrip() {
   const card = $('#trip-countdown-card');
   if (!trip?.destination || !trip?.startDate || !trip?.endDate) {
     card.classList.remove('configured');
-    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=14#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
-    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=14#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
+    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=15#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
+    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=15#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
     $('#trip-countdown').textContent = '—'; $('#trip-countdown-label').textContent = 'giorni'; $('#trip-progress-bar').style.width = '0%';
     return;
   }
@@ -225,8 +225,8 @@ function renderTrip() {
   }
 
   const country = trip.country || legacyCountryCodes[trip.flag] || 'world';
-  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=14#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
-  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=14#${country}`); $('#trip-destination').textContent = trip.destination;
+  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=15#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
+  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=15#${country}`); $('#trip-destination').textContent = trip.destination;
   $('#trip-dates').textContent = `${formatDate(trip.startDate, 'short')} — ${formatDate(trip.endDate, 'short')}`;
   $('#trip-countdown').textContent = count; $('#trip-countdown-label').textContent = label; $('#trip-progress-bar').style.width = `${progress}%`;
   card.setAttribute('aria-label', `Trasferta a ${trip.destination}: ${sidebarStatus}. Tocca per modificare`);
