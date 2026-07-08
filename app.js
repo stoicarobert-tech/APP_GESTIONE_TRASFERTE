@@ -201,8 +201,8 @@ function renderTrip() {
   const card = $('#trip-countdown-card');
   if (!trip?.destination || !trip?.startDate || !trip?.endDate) {
     card.classList.remove('configured');
-    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=15#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
-    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=15#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
+    $('#sidebar-trip-flag-use').setAttribute('href', 'flags.svg?v=16#world'); $('#sidebar-trip-name').textContent = 'La tua trasferta'; $('#journey-days').textContent = 'Tocca per configurare';
+    $('#trip-countdown-flag-use').setAttribute('href', 'flags.svg?v=16#world'); $('#trip-destination').textContent = 'Imposta destinazione e date'; $('#trip-dates').textContent = 'Tocca qui per iniziare il countdown';
     $('#trip-countdown').textContent = '—'; $('#trip-countdown-label').textContent = 'giorni'; $('#trip-progress-bar').style.width = '0%';
     return;
   }
@@ -225,8 +225,8 @@ function renderTrip() {
   }
 
   const country = trip.country || legacyCountryCodes[trip.flag] || 'world';
-  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=15#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
-  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=15#${country}`); $('#trip-destination').textContent = trip.destination;
+  $('#sidebar-trip-flag-use').setAttribute('href', `flags.svg?v=16#${country}`); $('#sidebar-trip-name').textContent = trip.destination; $('#journey-days').textContent = sidebarStatus;
+  $('#trip-countdown-flag-use').setAttribute('href', `flags.svg?v=16#${country}`); $('#trip-destination').textContent = trip.destination;
   $('#trip-dates').textContent = `${formatDate(trip.startDate, 'short')} — ${formatDate(trip.endDate, 'short')}`;
   $('#trip-countdown').textContent = count; $('#trip-countdown-label').textContent = label; $('#trip-progress-bar').style.width = `${progress}%`;
   card.setAttribute('aria-label', `Trasferta a ${trip.destination}: ${sidebarStatus}. Tocca per modificare`);
@@ -401,11 +401,24 @@ async function renderPhotos() {
   photos = photos.filter(photo => photo.owner ? photo.owner === currentProfileId() : currentProfileId() === 'default');
   photos.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
   if (selectedPhotoFilter !== 'all') photos = photos.filter(p => p.type === selectedPhotoFilter);
-  $('#photo-grid').innerHTML = photos.length ? photos.map(photo => `<article class="photo-card">
+  $('#photo-grid').innerHTML = photos.length ? photos.map(photo => `<article class="photo-card" data-view-photo="${photo.id}" role="button" tabindex="0" aria-label="Apri foto ${escapeHTML(photo.caption || photo.type)}">
     <img src="${photo.data}" alt="${escapeHTML(photo.caption || photo.type)}" />
     <span class="photo-type">${escapeHTML(photo.type)}</span><button class="photo-delete" data-delete-photo="${photo.id}" aria-label="Elimina foto">×</button>
     <div class="photo-overlay"><strong>${escapeHTML(photo.caption || (photo.type === 'frigo' ? 'Il mio frigo' : photo.type === 'spesa' ? 'La mia spesa' : 'Ricordo'))}</strong><small>${formatDate(photo.date)}</small></div>
   </article>`).join('') : emptyState('◎', 'Nessuna foto', 'Crea una memoria visiva del frigo e della spesa');
+}
+
+async function openPhotoViewer(photoId) {
+  const photos = await photoStore('getAll');
+  const photo = photos.find(item => item.id === photoId && photoBelongsToProfile(item, currentProfileId()));
+  if (!photo) return showToast('Foto non trovata');
+  $('#photo-view-image').src = photo.data;
+  $('#photo-view-image').alt = photo.caption || photo.type;
+  $('#photo-view-type').textContent = (photo.type || 'foto').toUpperCase();
+  $('#photo-view-title').textContent = photo.caption || (photo.type === 'frigo' ? 'Il mio frigo' : photo.type === 'spesa' ? 'La mia spesa' : 'Foto salvata');
+  $('#photo-view-date').textContent = formatDate(photo.date);
+  $('#photo-view-caption').textContent = photo.caption || 'Tocca fuori o premi × per chiudere.';
+  $('#photo-view-dialog').showModal();
 }
 
 function renderAll() {
@@ -509,8 +522,10 @@ function bindEvents() {
     }
     const deletePhoto = event.target.closest('[data-delete-photo]');
     if (deletePhoto && confirm('Eliminare questa foto?')) {
-      await photoStore('delete', deletePhoto.dataset.deletePhoto); renderPhotos(); showToast('Foto eliminata');
+      await photoStore('delete', deletePhoto.dataset.deletePhoto); renderPhotos(); showToast('Foto eliminata'); return;
     }
+    const viewPhoto = event.target.closest('[data-view-photo]');
+    if (viewPhoto) openPhotoViewer(viewPhoto.dataset.viewPhoto);
     const switchProfile = event.target.closest('[data-switch-profile]');
     if (switchProfile && switchProfile.dataset.switchProfile !== currentProfileId()) {
       profiles.current = switchProfile.dataset.switchProfile;
@@ -540,6 +555,12 @@ function bindEvents() {
   $$('#photo-filters .chip').forEach(button => button.addEventListener('click', () => {
     selectedPhotoFilter = button.dataset.filter; $$('#photo-filters .chip').forEach(b => b.classList.toggle('active', b === button)); renderPhotos();
   }));
+  $('#photo-grid').addEventListener('keydown', event => {
+    if (!['Enter', ' '].includes(event.key)) return;
+    const viewPhoto = event.target.closest('[data-view-photo]');
+    if (!viewPhoto) return;
+    event.preventDefault(); openPhotoViewer(viewPhoto.dataset.viewPhoto);
+  });
   $$('#backpack-filters .chip').forEach(button => button.addEventListener('click', () => {
     selectedBackpackFilter = button.dataset.filter; $$('#backpack-filters .chip').forEach(b => b.classList.toggle('active', b === button)); renderBackpack();
   }));
